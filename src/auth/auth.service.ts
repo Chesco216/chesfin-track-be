@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -80,7 +81,7 @@ export class AuthService {
         name: user.name,
         email: user.email,
       },
-      newToken,
+      token: newToken,
     };
   }
 
@@ -90,6 +91,7 @@ export class AuthService {
   }
 
   private handleDbExeptions(error: any) {
-    if (error.code == 23505) throw new BadRequestException(error.detail);
+    if (error.code == 23505)
+      throw new ConflictException('Duplicated ' + error.detail);
   }
 }
