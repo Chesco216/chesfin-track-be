@@ -1,11 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Transaction } from './entities/transaction.entity';
+import { Repository } from 'typeorm';
+import { User } from 'src/auth/entities/user.entity';
+import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class TransactionsService {
-  create(createTransactionDto: CreateTransactionDto) {
-    return 'This action adds a new transaction';
+  constructor(
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
+
+    private readonly categoryService: CategoryService,
+  ) { }
+
+  async create(createTransactionDto: CreateTransactionDto, user: User) {
+    try {
+      const category = await this.categoryService.findOne(
+        createTransactionDto.category,
+      );
+      if (!category)
+        throw new BadRequestException(
+          `category id ${createTransactionDto.category} not found`,
+        );
+      const newTransaction = this.transactionRepository.create({
+        ...createTransactionDto,
+        createdAt: new Date(),
+        user,
+        category,
+      });
+
+      await this.transactionRepository.save(newTransaction);
+
+      return newTransaction;
+    } catch (error) {
+      this.handleDBErrors(error);
+    }
   }
 
   findAll() {
@@ -22,5 +54,10 @@ export class TransactionsService {
 
   remove(id: number) {
     return `This action removes a #${id} transaction`;
+  }
+
+  private handleDBErrors(error) {
+    console.log({ error });
+    throw new BadRequestException('pipipi');
   }
 }

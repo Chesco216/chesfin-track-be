@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Category } from 'src/category/entities/category.entity';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -18,4 +20,10 @@ export class User {
 
   @Column('bool', { default: true })
   isActive: boolean;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  transaction: Transaction[];
+
+  @OneToMany(() => Category, (category) => category.user)
+  category: Category[];
 }

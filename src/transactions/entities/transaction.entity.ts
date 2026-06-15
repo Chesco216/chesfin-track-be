@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/auth/entities/user.entity';
+import { Category } from 'src/category/entities/category.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Transaction {
@@ -20,9 +22,9 @@ export class Transaction {
   @Column('date')
   createdAt: Date;
 
-  // user: User
-  //
-  // category: Category
-  //
-  // recurring: Recurring
+  @ManyToOne(() => User, (user) => user.transaction)
+  user: User;
+
+  @ManyToOne(() => Category, (category) => category.transaction)
+  category: Category;
 }

@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { TransactionsModule } from './transactions/transactions.module';
+import { CommonModule } from './common/common.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { TransactionsModule } from './transactions/transactions.module';
     }),
     AuthModule,
     TransactionsModule,
+    CommonModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
