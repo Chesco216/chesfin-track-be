@@ -28,8 +28,10 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll() {
-    return this.transactionsService.findAll();
+  @UseGuards(AuthGuard())
+  findAll(@GetUser() user: User) {
+    const { id } = user;
+    return this.transactionsService.findAll(id);
   }
 
   @Get(':id')

@@ -34,13 +34,31 @@ export class TransactionsService {
 
       await this.transactionRepository.save(newTransaction);
 
-      return newTransaction;
+      const { user: u, ...transaction } = newTransaction;
+
+      return transaction;
     } catch (error) {
       this.handleDBErrors(error);
     }
   }
 
-  findAll() {
+  async findAll(id: string) {
+    try {
+      const queryBuilder =
+        this.transactionRepository.createQueryBuilder('trans');
+      const transArr = await queryBuilder
+        .where('trans.userId = :id', { id })
+        .getMany();
+
+      const transactions = transArr.map((transaction) => {
+        const { user, ...data } = transaction;
+        return data;
+      });
+
+      return transactions;
+    } catch (error) {
+      this.handleDBErrors(error);
+    }
     return `This action returns all transactions`;
   }
 

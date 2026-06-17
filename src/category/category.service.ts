@@ -22,7 +22,12 @@ export class CategoryService {
       });
 
       await this.categoryRepository.save(newCategory);
-      return newCategory;
+      return {
+        id: newCategory.id,
+        name: newCategory.name,
+        icon: newCategory.icon,
+        color: newCategory.color,
+      };
     } catch (error) {
       this.handleDBErrors(error);
     }
