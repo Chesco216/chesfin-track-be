@@ -3,6 +3,7 @@ import {
   IsPositive,
   IsString,
   Max,
+  MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
@@ -10,6 +11,7 @@ import {
 export class CreateCategoryDto {
   @IsString()
   @MinLength(2)
+  @MaxLength(30)
   name: string;
 
   @IsNumber()

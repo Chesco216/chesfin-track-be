@@ -3,16 +3,18 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { GetUser } from 'src/auth/decorators/get-user/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { ParseTransactionQueryPipe } from './pipes/transaction-query-validation.pipe';
+import { type ValidTransactionQueries } from './interfaces/ValidTransactionQueries';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -27,11 +29,26 @@ export class TransactionsController {
     return this.transactionsService.create(createTransactionDto, user);
   }
 
-  @Get()
+  @Get('all')
   @UseGuards(AuthGuard())
   findAll(@GetUser() user: User) {
     const { id } = user;
     return this.transactionsService.findAll(id);
+  }
+
+  @Get()
+  @UseGuards(AuthGuard())
+  findAllWithPagination(
+    @GetUser() user: User,
+    @Query(ParseTransactionQueryPipe) query: ValidTransactionQueries,
+  ) {
+    const { id } = user;
+    console.log(query);
+    return this.transactionsService.findAllWithPagination(
+      id,
+      +query['limit'],
+      +query['offset'],
+    );
   }
 
   @Get(':id')

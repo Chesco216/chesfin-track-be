@@ -25,6 +25,8 @@ export class Transaction {
   @ManyToOne(() => User, (user) => user.transaction)
   user: User;
 
-  @ManyToOne(() => Category, (category) => category.transaction)
+  @ManyToOne(() => Category, (category) => category.transaction, {
+    eager: true,
+  })
   category: Category;
 }

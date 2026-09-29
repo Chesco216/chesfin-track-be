@@ -46,20 +46,40 @@ export class TransactionsService {
     try {
       const queryBuilder =
         this.transactionRepository.createQueryBuilder('trans');
-      const transArr = await queryBuilder
+      const [transArr, total] = await queryBuilder
+        .leftJoinAndSelect('trans.category', 'category')
         .where('trans.userId = :id', { id })
-        .getMany();
+        .getManyAndCount();
 
-      const transactions = transArr.map((transaction) => {
-        const { user, ...data } = transaction;
-        return data;
-      });
-
-      return transactions;
+      return {
+        transactions: transArr,
+        total,
+      };
     } catch (error) {
       this.handleDBErrors(error);
     }
-    return `This action returns all transactions`;
+  }
+
+  async findAllWithPagination(id: string, limit: number, offset: number) {
+    try {
+      const queryBuilder =
+        this.transactionRepository.createQueryBuilder('trans');
+      const [transArr, total] = await queryBuilder
+        .leftJoinAndSelect('trans.category', 'category')
+        .where('trans.userId = :id', { id })
+        .skip(offset)
+        .take(limit)
+        .getManyAndCount();
+
+      return {
+        transactions: transArr,
+        total,
+        offset,
+        limit,
+      };
+    } catch (error) {
+      this.handleDBErrors(error);
+    }
   }
 
   findOne(id: number) {
